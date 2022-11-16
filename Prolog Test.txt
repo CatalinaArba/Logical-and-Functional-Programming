@@ -1,0 +1,34 @@
+Inlocuieste toate aparitiile elementului maxom dintr-o lista cu un element e
+%maxi(L-list,M-the initial value for a maxi,R-the actual max value
+maxi([],R,R).
+maxi([H|T],M,R):-
+    M2 is max(H,M),
+    maxi(T,M2,R).
+
+
+
+%main_maxi(L-list,R-the maximum value of the list)
+%flow model(i,i)(i,o)
+main_maxi([H|T],R):-
+    maxi(T,H,R).
+
+
+
+%list(L-list,M-max,R-resulted list)
+%flow model(i,i,i)(i,i,o)
+list([],_,[]).
+list([H|T],M,[H|R]):-
+    %the case the current element is equal tu the maximum
+    H=\=M,
+    !,
+    list(T,M,R).
+list([_|T],M,R):-
+    list(T,M,R).
+
+
+
+%main_list(L-list,R-the resulted list)
+%flow model(i,i)(i,o)
+main_list(L,R):-
+    main_maxi(L,Maxi),
+    list(L,Maxi,R).

@@ -1,0 +1,59 @@
+a. Replace all occurrences of an element from a list with another element e.
+
+%replacefunction(L-list,n-element,-element,R-list)
+%flow model(i,i,i,i)(i,i,i,o)
+replacefunction([],_,_,_).
+replacefunction([H|T],NR,E,[H1|R]):-
+    H=:=NR,
+    !,
+    H1=E,
+    replacefunction(T,NR,E,R).
+replacefunction([H|T],NR,E,[H1|R]):-
+    H1=H,
+    replacefunction(T,NR,E,R).
+
+b. For a heterogeneous list, formed from integer numbers and list of numbers, define a predicate to determine the maximum number of the list, and then to replace this value in sublists with the maximum value of sublist.
+Eg.: [1, [2, 5, 7], 4, 5, [1, 4], 3, [1, 3, 5, 8, 5, 4], 5, [5, 9, 1], 2] =>
+[1, [2, 7, 7], 4, 5, [1, 4], 3, [1, 3, 8, 8, 8, 4], 5, [9, 9, 1], 2]
+
+list_max([H|T],Max):-
+    number(H),
+    !,
+    list_max2(T,H,Max).
+list_max([_|T],Max):-
+    list_max(T,Max).
+
+list_max2([],Max,Max).
+list_max2([H|T],Max0,Max):-
+	number(H),
+	!,
+	Max1 is max(H,Max0),
+	list_max2(T,Max1,Max).
+list_max2([_|T],Max1,Max):-
+	list_max2(T,Max1,Max).
+
+replace_in_sublist([],_,_,[]).
+replace_in_sublist([H|T],Max_list,Max_sublist,[Max_list|Rez]):-
+    H=:=Max_sublist,
+    !,
+    replace_in_sublist(T,Max_list,Max_sublist,Rez).
+replace_in_sublist([H|T],Max_list,Max_sublist,[H|Rez]):-
+    replace_in_sublist(T,Max_list,Max_sublist,Rez).
+
+replace_in_list([],_,[]).
+replace_in_list([H|T],Max_list,[H|Rez]):-
+    number(H),
+    !,
+    replace_in_list(T,Max_list,Rez).
+replace_in_list([H|T],Max_list,[Rez_sublist|Rez]):-
+    is_list(H),
+    !,
+    list_max(H,Max_sublist),
+    replace_in_sublist(H,Max_sublist,Max_list,Rez_sublist),
+    replace_in_list(T,Max_list,Rez).
+
+main(L,Rez):-
+    list_max(L,Max),
+    replace_in_list(L,Max,Rez).
+main([1, [2, 5, 7], 4, 5, [1, 4], 3, [1, 3, 5, 8, 5, 4], 5, [5, 9, 1], 2],R).
+
