@@ -1,0 +1,150 @@
+%Pool Party Zebra Puzzle
+%Five girls are enjoying a nice sunny day at the pool. Using the clues, find out the characteristics of all the girls.
+
+%1.The girl who likes Fishes is at the fifth position.
+%2.Anna applied the sunscreen with the highest SPF.
+%3.Lucy is next to the youngest girl.
+%4.The 7-year-old girl is exactly to the left of the girl who is wearing the Red swimsuit.
+%5.In the fourth position is the girl who likes Cats.
+%6.The 9-year-old girl is exactly to the right of the girl who likes Rabbits.
+%7.The girl who likes Birds is at the third position.
+%8.The girl wearing the Red swimsuit is at one of the ends.
+%9.The girl who is 10 likes Grape juice.
+%10.The girl who likes Rabbits is next to the one who applied the SPF 40 sunscreen.
+%11.Victoria is at the second position.
+%12.The girl wearing the Green swimsuit is somewhere to the left of the girl who applied the SPF 25 sunscreen.
+%13.I specified the name of the columns in the table
+%14.Grace likes Cats.
+%15.The girl wearing the Yellow swimsuit is somewhere to the left of the one who applied the SPF 35 sunscreen.
+%16.The youngest girl likes Mango juice.
+%17.Grace is next to the girl who is wearing the Green swimsuit.
+%18.The girl who applied the SPF 30 sunscreen likes Dogs.
+%19.The girl wearing the Yellow swimsuit is next the girl who likes Fishes.
+%20.The girl who likes Apple juice applied the SPF 20 sunscreen.
+%21.In the first position is the girl who likes Lemon juice.
+%22.The girl who applied the SPF 35 sunscreen is exactly to the right of the girl who likes Mango juice.
+%23.The girl wearing the White swimsuit applied the SPF 20 sunscreen.
+%24.The 8-year-old girl is at the second position.
+
+
+:- use_rendering(table,
+		 [header(girl('Swimsute','Name','Age','Juice','SPF','Animal' ))]).
+
+
+%nextToLeft(A-a girl, B-a girl,Ls-the list of girls)
+%The predicate "nextToLeft" appends in the list of girls on adjacent position the girl A on the left of the girl B
+%Prolog definition for predefined predicate "append": append(?List1, ?List2, ?List1AndList2)=>List1AndList2 is the concatenation of List1 and List2
+%In this implementation append predicate concatenate the list containing the girls that are before A and B with the list containing girls A,B and the rest of them in the list of girls
+nextToLeft(A, B, Ls) :- append(_, [A,B|_], Ls).
+
+%nextTo(A-a girl, B-a girl,Ls-the list of girls)
+%I defined 2 predicates "nextTo" because there are 2 cases:1) A is in the left of B		 2)A is in the right of B
+%In case A is not on the left of B, the second "nextTo" predicate will be called
+%The same as above, append is used to concatenate the list, placing A and B in 2 orders( 1)A in front of B   2)B in front of A) 
+nextTo(A,B, Ls):-append(_,[B,A|_], Ls).
+nextTo(A,B, Ls):-append(_,[A,B|_], Ls).
+
+
+%atAnyEnd(A-a girl,Ls-the list of girls)
+%I defined 2 predicates "atAnyEnd" because there are 2 cases:1) A is at the beginning of the list		 2)A is at the end of the list
+%In case A is not at the beginning, the second "atAnyEnd" predicate will be called and place A at the end
+atAnyEnd(A, Ls):- Ls=[A|_].
+atAnyEnd(A, Ls):- Ls=[_,_,_,_,A].
+
+
+%somewhereLeft(A-a girl, B-a girl,Ls-the list of girls)   
+%I defined 4 predicates "somewhereLeft" to include all the cases that are possible: 
+%A and B are adjacent
+%A ,1 girls in between, B 
+%A ,2 girls in between, B 
+%A ,3 girls in between, B 
+%Append predefined predicate is used the same as above
+somewhereLeft(A,B, Ls):- append(_, [A, B|_], Ls).
+somewhereLeft(A,B, Ls):- append(_, [A,_, B|_], Ls).
+somewhereLeft(A,B, Ls):- append(_, [A,_,_, B|_], Ls).
+somewhereLeft(A,B, Ls):- append(_, [A,_,_,_, B|_], Ls).
+
+girls(Girls):-
+    length(Girls, 5),  
+    %1.The girl who likes Fishes is at the fifth position.
+    Girls=[_,_,_,_,girl(_,_,_,_,_,fishes)],  
+    
+    %5.In the fourth position is the girl who likes Cats.
+    Girls=[_,_,_,girl(_,_,_,_,_,cats),_], 
+    
+    %7.The girl who likes Birds is at the third position.
+    Girls=[_,_,girl(_,_,_,_,_,birds),_,_],  
+    
+     %11.Victoria is at the second position.
+    Girls=[_,girl(_,victoria,_,_,_,_),_,_,_], 
+    
+    %20.In the first position is the girl who likes Lemon juice.
+     Girls=[girl(_,_,_,lemon,_,_),_,_,_,_], 
+    
+    %23.The 8-year-old girl is at the second position.
+     Girls=[_,girl(_,_,8,_,_,_),_,_,_],  
+    
+    
+    %9.The girl who is 10 likes Grape juice.
+    member(girl(_,_,10,grape,_,_),Girls),
+    
+     %15.The youngest girl likes Mango juice.
+    Youngest=girl(_,_,_,mango,_,_),
+    
+    % 3.Lucy is next to the youngest girl.
+    nextTo(girl(_,lucy,_,_,_,_),Youngest,Girls),
+    
+    %4.The 7-year-old girl is exactly to the left of the girl who is wearing the Red swimsuit.
+	nextToLeft(girl(_,_,7,_,_,_),girl(red,_,_,_,_,_),Girls),   
+    
+    %6.The 9-year-old girl is exactly to the right of the girl who likes Rabbits.
+    nextToLeft(girl(_,_,_,_,_,rabbits),girl(_,_,9,_,_,_),Girls),
+    
+	%8.The girl wearing the Red swimsuit is at one of the ends.
+    atAnyEnd(girl(red,_,_,_,_,_),Girls),
+    
+    %10.The girl who likes Rabbits is next to the one who applied the SPF 40 sunscreen.
+    nextTo(girl(_,_,_,_,_,rabbits),girl(_,_,_,_,40,_),Girls),
+    
+    % 12.The girl wearing the Green swimsuit is somewhere to the left of the girl who applied the SPF 25 sunscreen.
+    somewhereLeft(girl(green,_,_,_,_,_),girl(_,_,_,_,25,_),Girls),
+    
+    %13.Grace likes Cats.
+    member(girl(_,grace,_,_,_,cats),Girls),
+    
+    %14.The girl wearing the Yellow swimsuit is somewhere to the left of the one who applied the SPF 35 sunscreen.
+    somewhereLeft(girl(yellow,_,_,_,_,_),girl(_,_,_,_,35,_),Girls),
+
+    %16.Grace is next to the girl who is wearing the Green swimsuit.
+    nextTo(girl(_,grace,_,_,_,_),girl(green,_,_,_,_,_),Girls),
+    
+    %17.The girl who applied the SPF 30 sunscreen likes Dogs.
+    member(girl(_,_,_,_,30,dogs),Girls),    
+    
+	%18.The girl wearing the Yellow swimsuit is next the girl who likes Fishes.
+    nextTo(girl(yellow,_,_,_,_,_),girl(_,_,_,_,_,fishes),Girls),
+    
+	%21.The girl who applied the SPF 35 sunscreen is exactly to the right of the girl who likes Mango juice.
+    nextToLeft(girl(_,_,_,mango,_,_),girl(_,_,_,_,35,_),Girls),
+    
+    %2.Anna applied the sunscreen with the highest SPF.
+    member(girl(_,anna,_,_,40,_),Girls),
+    
+    %9.The girl who is 10 likes Grape juice.
+    member(girl(_,_,10,grape,_,_),Girls),
+    
+    %19.The girl who likes Apple juice applied the SPF 20 sunscreen.
+    member(girl(_,_,_,apple,20,_),Girls), 
+    
+	%22.The girl wearing the White swimsuit applied the SPF 20 sunscreen.
+    member(girl(white,_,_,_,20,_),Girls), 
+    
+	
+    %I included the cases that were not defined above, the rest of the attributes 
+    member(girl(blue,_,_,_,_,_),Girls), 
+    member(girl(_,nancy,_,_,_,_),Girls), 
+    member(girl(_,_,11,_,_,_),Girls), 
+    member(girl(_,_,_,orange,_,_),Girls).
+
+pool_party(Girls):-
+    girls(Girls).
