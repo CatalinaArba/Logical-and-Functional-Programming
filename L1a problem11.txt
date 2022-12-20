@@ -1,0 +1,111 @@
+11.a)Determine the least common multiple of the numerical values of a nonlinear list.
+
+https://rextester.com/ZIMCO63258
+
+(defun Mygcd(x y)
+                (cond
+                ((= x y) x)
+                ((= x 0) y)
+                ((= y 0) x)
+                ((> x y)(Mygcd (- x y) y))
+                (t (Mygcd x (- y x)))
+                      )
+    )
+(defun Mygcd2 (a b)
+  (if (= b 0)
+      a
+      (Mygcd2 b (mod a b))))
+
+(defun Mylcm(x y)
+    (cond((or(= x 0)(= y 0)) 0)
+        (t(/(* x y) (Mygcd x y)))
+        )
+    )
+
+(defun listlcm(l r)
+    (cond((null l)r)
+        (t(listlcm (cdr l) (Mylcm (car l) r)))
+        )
+    )
+(defun main(l)
+    (listlcm (cdr l) (car l))
+    )
+
+(print(main '(2 4 6 8)))
+
+
+b)Write a function to test if a linear list of numbers has a "mountain" aspect (a list has a "mountain" aspect if the items increase to a certain point and then decreases. Eg. (10 18 29 17 11 10). The list must have at least 3 atomsto fullfil this criteria.
+//metoda 1
+(defun _mountain (l decreasing)
+	(cond
+		((= (list-length l) 1) (if decreasing nil T))
+		((and (< (car l) (cadr l)) (not decreasing)) nil)
+		((and (> (car l) (cadr l)) decreasing) (_mountain (cdr l) nil))
+		(T (_mountain (cdr l) decreasing))
+	)
+)
+
+//metoda 2
+(defun mountin(l flag)
+    (cond
+        ((and (= (list-length l) 1) (equal flag 1)) nil T)
+        ((and (< (car l) (cadr l)) (equal flag 0)) nil)
+		((and (> (car l) (cadr l)) (equal flag 1)) (mountain (cdr l) 0))
+		(T (mountain (cdr l) flag))
+        
+        ;((and (= (list-length l) 1) (= flag 0)) nil )
+        ;((and (< (car l) (cadr l))(= flag 0)) (mountin (cdr l) 0))
+        ;((> (car l) (cadr l))(mountin (cdr l) 1))
+        ;((< (car l) (cadr l)) (mountin (cdr l) 0))
+        
+        )
+    )
+
+//metoda 3
+(defun mountin(l flag)
+    (cond
+        ((and (= (list-length l) 1) (equal flag 1)) nil T)
+        ((and (< (car l) (cadr l))(= flag 0)) (mountin (cdr l) 0))
+        ((> (car l) (cadr l))(mountin (cdr l) 1))
+        )
+    )
+
+
+(print (_mountain '(1 2 3 4 3 5 4) T))
+(print (mountin '( 1 2 3 4 3 5 4) 0))
+c)Remove all occurrences of a maximum numerical element from a nonlinear list.
+
+(defun remove(l maxe)
+    (cond
+        ((null l) nil)
+        ((and(numberp (car l))(not (equal (car l) maxe)))  (cons (car l) (remove (cdr l) maxe)))
+        ((listp(car l))(cons (remove (car l) maxe) (remove(cdr l) maxe)))
+        (t(remove(cdr l) maxe))
+        )
+    )
+
+(defun maxi(l)
+    (cond((null l) -99999)
+    ((numberp(car l))(max(car l) (maxi(cdr l))))
+    ((listp(car l))(max(maxi(car l))(maxi(cdr l))))
+    )
+)
+
+(defun main(l)
+    (remove l (maxi l))
+    )
+
+(print(main '(2 3 (4 9 5) 6 9 (7 9 8) 9)))
+(print(maxi '(2 3 (4 5) 6 (7 8) 9)))
+
+
+d)Write a function which returns the product of numerical even atoms from a list, to any level.
+(defun even_atoms_product(l)(
+                             cond((null l) 1)
+                             ((and(numberp(car l)) (evenp (car l))) (* (car l) ( even_atoms_product(cdr l))))
+                             (t( even_atoms_product(cdr l)))
+                             )
+    )
+
+
+(print(even_atoms_product '(2 3 (4 5) 6)))

@@ -1,0 +1,31 @@
+11.Return the level (and coresponded list of nodes) with maximum number of nodes for a tree of type (2). The level of the root element is 0.
+
+https://rextester.com/PCSIMK43475
+
+
+(defun getNodes(tree level)
+    (COND
+         ((null tree) nil)
+         ((= level 0) (list(car tree)))
+         (t(append(getNodes (cadr tree)(- level 1))(getNodes(caddr tree)(- level 1))))
+     )
+    )
+(print (getNodes '(1 (2 (3) (4)) (5 (6) (7))) 0))
+
+(defun getNodesMaxLevel(tree max level)
+    (setf cuurentLevelNodes (getNodes tree level))
+    (COND
+         ((null cuurentLevelNodes) max)
+         ((>(list-length cuurentLevelNodes)(list-length max))(getNodesMaxLevel tree cuurentLevelNodes (+ level 1)))
+         (t(getNodesMaxLevel tree max (+ level 1)))
+     )
+)
+    
+(print (getNodesMaxLevel '(1 (2 (3) (4)) (5 (6) (7))) '() 0))
+
+(defun main (tree)
+	(getNodesMaxLevel tree '() 0)
+)
+(print (main  '(1 (2 (3) (4)) (5 (6) (7))) ) )
+
+
