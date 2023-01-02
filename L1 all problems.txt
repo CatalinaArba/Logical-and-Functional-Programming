@@ -1,0 +1,517 @@
+1a)Write a function to return the n-th element of a list, or NIL if such an element does not exist.
+
+(defun nElement (l pos n)
+    (cond
+        ((= pos n)(car l))
+        ((< pos n)(nElement (cdr l) (+ pos 1) n))
+        ((or(> pos n)(< n 0)) NIL)
+        )
+    )
+
+;(print (nElement '(1 2 3 4 5) 1 4))
+
+;----------------------------------------------------
+
+1b)Write a function to check whether an atom E is amember of a list which is not necessarily linear.
+
+(defun findE(l e)
+    (cond
+        ((null l) 0)
+        ((= (car l) e) 1)
+        (t(findE(cdr l) e))
+        )
+    )
+
+(defun mainFind(l e)
+    (setf resultFindE (findE l e))
+    (cond
+        ((= resultFindE 1) (princ "E is in the list "))
+        (t(princ  "E is not in the list"))
+        )
+)
+        
+                           
+;(print (findE '(1 2 3 4 5) 4))
+;(print(mainFind'(1 2 3 4 5) 4))
+
+;----------------------------------------------------
+
+;1c) Write a function to determine the listof all sublists of a given list, on any level. A sublist is either the list itself, or any element that is a list, at any level.
+;Example: (1 2 (3 (4 5)(6 7)) 8 (9 10)) => 5sublists:(  (1 2 (3 (4 5) (6 7)) 8 (9 10))    (3 (4 5) (6 7))     (4 5)   (6 7)   (9 10) )
+
+(defun all_sublists (l)
+    (cond
+        ((atom l) nil)
+        (T (apply 'append (list l) (mapcar 'all_sublists l)))
+    )
+)
+
+;(print (all_sublists '((1 2 (3 (4 5) (6 7)) 8 (9 10))) ))
+
+;----------------------------------------------------
+
+;1dWrite a function to transform a linear list into a set.
+
+(defun transform (l r)
+    (cond
+        ((null l)r)
+        ((member (car l) (cdr l)) (transform (cdr l) r))
+        (t(transform (cdr l) (append r (list(car l)))))
+        )
+    )
+
+;(print (transform '(1 1 2 3 4 5 5) ()))
+
+------------------------------------------------------------------------------------------------------------------------
+
+;2a) Write a function to return the dot product of two vectors. https://en.wikipedia.org/wiki/Dot_product 
+
+; dotProduct(l1l2...ln, k1k2...km) = 
+; = 0 , if n = 0
+; = l1*l2 + dotProduct(l2...ln, k2...km) , otherwise
+
+(defun dotProduct(l k)
+  (cond
+    ((null l) 0)
+    (t (+ (* (car l) (car k)) (dotProduct (cdr l) (cdr k))))
+  )
+)
+
+;(print (dotProduct '(1 2 3) '(4 5 6)))
+
+
+
+;2b) Write a function to return the depth of a list. Example: the depth of a linear list is 1. 
+
+; myMax(a, b) = 
+; = a , if a > b
+; = b ,  otherwise
+
+
+(defun myMax (a b)
+  (cond
+    ((> a b) a)
+    (t b)
+  )
+)
+
+
+; findDepth(l1l2...ln, c) = 
+; = c , if n = 0
+; = myMax(findDepth(l1,c+1), findDepth(l2...ln, c)) , if l1 is a list
+; = findDepth(l2...ln, c) , otherwise
+
+
+(defun findDepth (l c)
+  (cond
+    ((null l) c)
+    ((listp (car l)) (myMax (findDepth (car l) (+ c 1)) (findDepth (cdr l) c)))
+    (t (findDepth (cdr l) c))
+  )
+)
+
+; main(l1l2...ln) = 
+; = findDepth(l1l2...ln, 1)
+
+(defun main(l)
+  (cond
+    (t (findDepth l 1))
+  )
+)
+
+;(print (main '(6 (2 3 (4) (5) (6 (7))))))
+; => 4
+(print (main '(1 (2)(3) )))
+(print (main '(6 (2 3 (4) (5) (6 (7)) ) )  ))
+
+
+
+;;----------
+
+; 2c) Write a function to sort a linear list without keeping the double values.c) 
+
+; insert(l1l2...ln, elem) =
+; = () , if n = 0
+; = l1l2...ln , if l1 = elem ; same number won't be added
+; = {elem} U l1l2...ln, if elem < l1
+; = {l1} U insert(l2...ln, elem), otherwise
+
+(defun insert (l e)
+  (cond
+    ((null l) (list e))
+    ((= (car l) e) l)
+    ((< e (car l)) (cons e l))
+    (t (cons (car l) (insert (cdr l) e)))
+  )
+)
+
+; sortare(l1l2...ln) = 
+; = nil , if n = 0
+; = insert(sortare(l2...ln), l1) , otherwise
+
+(defun sortare (l)
+  (cond
+    ((null l) nil)
+    (t (insert (sortare (cdr l)) (car l)))
+  )
+)
+
+
+(print (sortare '(1 3 2 5 6 7 7 3 9)))
+; => (1 2 3 5 6 7 9)
+
+
+;-----------------------
+
+; 2d) Write a function to return the intersection of two sets.
+
+; contains(elem, l1l2...ln) = 
+; = NIL, if n = 0
+; = true, if l1 = elem
+; = contains(elem, l2...ln), otherwise
+
+
+(defun contains(e l)
+  (cond
+    ((null l) nil)
+    ((equal (car l) e) t)
+    (t (contains e (cdr l)))
+  )
+)
+
+
+; intersection(l1l2...ln, p1p2...pm) = 
+; = NIL , if n = 0
+; = {l1} U intersection(l2...ln, p1p2...pm) , if contains(l1, p1p2...pm) is true  ; add from the first list into the second one
+; = intersection(l2...ln, p1p2...pm) , otherwise
+
+
+(defun intersection_(l p)
+  (cond
+    ((null l) NIL)
+    ((contains (car l) p) (cons (car l) (intersection_ (cdr l) p)))
+    (t (intersection_ (cdr l) p))
+  )
+)
+
+;(print (intersection_ '(1 2 3 4 5) '(1 5 6 7 9)))
+; => (1 5)
+
+------------------------------------------------------------------------------------------------------------------------
+
+;gnu clisp  2.49.60
+;3a)
+
+(defun insertElem(l e pos)
+  (cond
+    ((null l) nil)
+    ((equal (mod pos 2) 0) (cons (car l) (cons e (insertElem (cdr l) e (+ 1 pos)))))
+    (t (cons (car l) (insertElem (cdr l) e (+ 1 pos))))
+  )
+)
+
+(defun mainA(l e)
+  (insertElem l e 1)
+)
+
+;(print (mainA '(1 2 3 4 5 6 7 8) 100))
+
+;--------------------------------------------------------
+
+; 3b) Write a function to get from a given list the list of all atoms, on any
+; level, but reverse order. Example:
+; (((A B) C) (D E)) ==> (E D C B A)
+
+(defun myAppend(l1 l2)
+  (cond
+    ((null l1) l2)
+    (t (cons (car l1) (myAppend (cdr l1) l2)))
+  )
+)
+
+(defun getAllAtoms (l)
+  (cond
+    ((null l) nil)
+    ((listp (car l)) (myAppend (getAllAtoms (cdr l)) (getAllAtoms (car l))))
+    (t (myAppend (getAllAtoms (cdr l)) (list (car l))))
+  )
+) 
+
+;(print (getAllAtoms '(((A B) C) (D E))))
+
+;----------------------------------------------------
+
+; 3c) Write a function that returns the greatest common divisor of all numbers in a nonlinear list.
+
+(defun _gcd (a b)
+    (cond
+        ((and (not (numberp a)) (not (numberp b))) nil)
+        ((not (numberp a)) b)
+        ((not (numberp b)) a)
+        ((equal b 0) a)
+        (T (_gcd b (mod a b)))
+    )
+)
+
+(defun list_gcd (l)
+    (cond
+        ((and (atom (car l)) (null (cdr l))) (car l))
+        ((listp (car l)) (_gcd (list_gcd (car l)) (list_gcd (cdr l))))
+        (T (_gcd (car l) (list_gcd (cdr l))))
+    )
+)
+
+;(print (list_gcd '(24 ( 18 (12 A B)) 72)))
+
+;------------------------------------------------------
+
+;3d) Write a function that determines the number of occurrences of a given atom in a nonlinear list.
+
+(defun nrOfOccurences(l c elem)
+  (cond
+    ((null l) c)
+    ((listp (car l)) (+ (nrOfOccurences (car l) 0 elem) (nrOfOccurences (cdr l) c elem)))
+    ((equal (car l) elem) (nrOfOccurences (cdr l) (+ 1 c) elem))
+    (t (nrOfOccurences (cdr l) c elem))
+  )
+)
+
+(defun mainD(l elem)
+  (nrOfOccurences l 0 elem)
+)
+
+;(print (mainD '(1 (3 (5 4 3) (5 3)) 3 3) 5))
+;=> 2
+
+------------------------------------------------------------------------------------------------------------------------
+
+;4bWrite a function to get from a given list the list of all atoms, on any level, but on the same order. 
+;Example:(((A B) C) (D E)) ==> (A B C D E)
+
+
+(defun atoms(l)
+    (cond 
+        ((null l) nil) 
+        ((atom l)(list l))
+        (t(append (atoms (car l)) (atoms (cdr l))))        
+        )
+    )
+
+;(print (atoms '(((A B)C) (D E)) ))
+
+------------------------
+
+;4c)Write a function that, with a list given as parameter, inverts only continuoussequences of atoms. Example:(a b c (d (e f) g h i)) ==> (c b a (d (f e) i h g))
+
+
+------------------------
+
+; 4d) Write a list to return the maximum value of the numerical atoms from a list, at superficial level.
+
+(defun maxi (l m)
+    (cond
+        ((null l) m)
+        ((and (numberp (car l)) (> (car l) m)) (maxi (cdr l) (car l)))
+        (t(maxi(cdr l) m))
+        )
+    )
+
+(defun mainMaxi(l)
+    (cond
+        ((null l) nil)
+        (t (maxi l 0))
+        )
+    )
+
+;(print (mainMaxi '(A 1 B 4 5 3 C F)))
+
+------------------------------------------------------------------------------------------------------------------------
+
+5a)Write twice the n-th element of a linear list. Example: for (10 20 30 40 50) and n=3 will produce (10 20 30 30 40 50).
+
+(defun twice (l n)
+    (cond
+        ((null l) nil)
+        ((= 1 n) (cons (car l) (cons (car l) (twice (cdr l) ( - n 1)))))
+        (t(cons (car l) (twice (cdr l) ( - n 1))))
+        )
+    )
+;(print (twice '(1 2 3 4 5) 4))
+
+------------------------
+
+;5b)Write a function to return an association list with the two lists given as parameters. Example: (A B C) (X Y Z) --> ((A.X) (B.Y) (C.Z)).
+
+(defun make-alist (keys values)
+  (if (and keys values)
+      (cons (cons (car keys) (car values)) (make-alist (cdr keys) (cdr values)))
+    nil))
+
+;(print(make-alist '(a b c d e) '(1 2 3 4 5)))
+
+;------------------------
+
+;5d) Write a function to return the number of all numerical atoms in a list at superficial level.
+(defun numbers (l count)
+    (cond
+        ((null l) count)
+        ((numberp (car l)) (numbers (cdr l) (+ count 1)))
+        (t(numbers (cdr l) count))
+        )
+    )
+
+(defun mainNumbers(l)
+    (cond
+        ((null l) nil)
+        (t (numbers l 0))
+        )
+    )
+
+;(print(mainNumbers '(1 (0 0) 1 (0 0) 1)))
+
+;------------------------------------------------------------------------------------------------------------------------
+
+
+;6a) Write a function to test whether a list is linear.
+
+(defun linear (l)
+    (cond
+        ((null l)1)
+        ((listp (car l)) 0)
+        (t(linear (cdr l)))
+        )
+    )
+
+(defun mainLinar(l)
+    (setf res(linear l))
+    (if (= 1 res)
+                 (princ "The list is linear")
+                 (princ "The list is not linear")
+                 )
+    )
+
+;(mainLinar '(1 2 3 (0) 4))
+;(mainLinar '(1 2 3 4))
+
+;------------------------
+
+;6b) Write a function to replace the first occurence of an element E in a given list with an other element O.
+
+(defun replaceOnce(l e o ok)
+    (cond
+        ((null l) nil)
+        ((and(= (car l) e)(= 1 ok)) (cons o (replaceOnce (cdr l) e o 0)))
+        (t(cons (car l) (replaceOnce (cdr l) e o ok)))
+        )
+    )
+
+(defun mainReplaceOnce(l e o)
+    (replaceOnce l e o 1)
+    )
+
+;(print(mainReplaceOnce '(1 2 3 4 5) 1 0))
+
+;------------------------
+
+;6c) Write a function to replace each sublist of a list with its last element.
+ ;A sublist is an element from the first level, which is a list.
+; Example: (a (b c) (d (e (f)))) ==> (a c (e (f))) ==> (a c (f)) ==> (a c f)
+; (a (b c) (d ((e) f))) ==> (a c ((e) f)) ==> (a c f)
+
+(defun lastElement (l)
+    (setf rv(reverse l))
+     (car rv)
+)
+
+(defun replace-sublists (lst)
+  (if (null lst)
+      nil
+      (if (listp (car lst)) ;list is not null
+          (cons (lastElement (car lst)) (replace-sublists (cdr lst))); head is a list
+          (cons (car lst) (replace-sublists (cdr lst)))))); head is not a list
+
+(print(replace-sublists ' (a (b c) (d (e (f))))))
+(print(replace-sublists '(a c (e (f))) ))
+(print(replace-sublists '(a c (f)) ))
+
+(print(replace-sublists  '(a (b c) (d ((e) f)))))
+
+;------------------------
+
+;6d)Write a function to merge two sorted lists without keeping double values.    
+(defun deleteDuplicates(l)
+    (cond
+        ((null l) null)
+        ((null (cdr l)) l)
+        ((not (= (car l)(cadr l)))( cons(car l)(deleteDuplicates(cdr l))))
+        (t(deleteDuplicates(cdr l)))
+        )
+    )
+        
+(defun merge-without-duplicates (lst1 lst2)
+  (cond ((null lst1) lst2)
+        ((null lst2) lst1)
+        ((= (car lst1) (car lst2)) (cons (car lst1) (merge-without-duplicates (cdr lst1) (cdr lst2))))
+        ((< (car lst1) (car lst2)) (cons (car lst1) (merge-without-duplicates (cdr lst1) lst2)))
+        (t (cons (car lst2) (merge-without-duplicates lst1 (cdr lst2))))))
+        
+(defun main(l1 l2)
+        (deleteDuplicates(merge-without-duplicates l1 l2))
+        )
+
+;(print ( merge-without-duplicates '(1 2 3 3) '(3 4 4 5 5 7)))
+;(print ( main'(1 2 3 3) '(3 4 4 5 5 7)))
+
+;------------------------
+
+;b)Write a function to determine the successor of a number represented digit by digit as a list,
+; without transforming the representation of the number from list to number. 
+;Example: (1 9 3 5 9 9) --> (1 9 3 6 0 0)
+
+(defun rev (l)
+           (cond
+             ((null l) '())
+             (T (append (rev (cdr l)) (list (car l)))))) 
+
+(defun successor(l flag)
+   
+    (cond
+        ((null l) nil)
+        ((> (+(car l) flag) 9) (cons (- (+ (car l) flag) 10 ) (successor (cdr l) 1)))
+        (t(cons (+ (car l) flag)(successor (cdr l) 0)))
+        )
+)
+(defun mainSuccessor(l)
+    (rev(successor (rev l) 1)))
+
+;(print(successor '(9 9 5 3 9 1) 1))
+;(print(mainSuccessor '(1 9 3 5 9 9)))
+
+;------------------------
+
+;7c)Write a function to return the set of all the atoms of a list.
+;Exemplu: (1 (2 (1 3 (2 4) 3) 1) (1 4)) ==> (1 2 3 4)
+
+(defun atomsWithoutDuplicates (lst)
+  (cond ((null lst) '())
+        ((atom lst) (cons lst '()))
+        (t (removeDuplicates (append (atomsWithoutDuplicates(car lst)) (atomsWithoutDuplicates (cdr lst)))))))
+
+(defun removeDuplicates (lst)
+  (cond ((null lst) '())
+        ((member (car lst) (cdr lst)) (removeDuplicates (cdr lst)))
+        (t (cons (car lst) (removeDuplicates (cdr lst))))))
+
+;(print(atomsWithoutDuplicates '(1 (2 (1 3 (2 4) 3) 1) (1 4))))
+
+;------------------------
+
+;7d)Write a function to test whether a linear list is a set.
+(defun isSet (lst)
+  (cond ((null lst) t)
+        ((member (car lst) (cdr lst)) nil)
+        (t (isSet (cdr lst)))))
+(print(isSet '(1 2 3 4 5)))
+(print(isSet '(1 2 1 3 4 5)))
+
+
