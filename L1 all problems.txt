@@ -1,4 +1,5 @@
-https://rextester.com/BCL14914
+https://rextester.com/BCL14914          1-7
+https://rextester.com/YND76754	    7-15
 
 1a)Write a function to return the n-th element of a list, or NIL if such an element does not exist.
 
@@ -466,7 +467,7 @@ https://rextester.com/BCL14914
 
 ;------------------------
 
-;b)Write a function to determine the successor of a number represented digit by digit as a list,
+;7b)Write a function to determine the successor of a number represented digit by digit as a list,
 ; without transforming the representation of the number from list to number. 
 ;Example: (1 9 3 5 9 9) --> (1 9 3 6 0 0)
 
@@ -516,4 +517,371 @@ https://rextester.com/BCL14914
 (print(isSet '(1 2 3 4 5)))
 (print(isSet '(1 2 1 3 4 5)))
 
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;8a) Write a function to return the difference of two sets.
+(defun findE(l e)
+    (cond
+        ((null l) 0)
+        ((= (car l) e) 1)
+        (t(findE(cdr l) e))
+        )
+    )
+(defun differenceSets(s1 s2);s1-s2 =>all the elements that are in s1 and not in s2
+    (cond
+        ((null s1) nil)
+        ((= (findE s2 (car s1))0) (cons (car s1) (differenceSets(cdr s1) s2)))
+        (t(differenceSets(cdr s1) s2))
+        )
+    )
 
+;(print (differenceSets '(1 2 3 4 5) '(2 3 4 5 6 7)))
+;------------------------
+;8b) Write a function to reverse a list with its all sublists, on all levels.
+(defun reverse-list-recursive (lst)
+  (if (null lst)
+      lst
+      (if (listp (car lst))
+          (append (reverse-list-recursive (cdr lst)) (list (reverse-list-recursive (car lst)) ))
+          (append (reverse-list-recursive (cdr lst)) (list (car lst)) ))))
+          
+
+(print (reverse-list-recursive '(1 2 (3 (4 5) (6 7)) 8 (9 10 11)) ))
+
+;------------------------
+;8c) Write a function to return the list of the first elements of all list elements of a given list with an odd number of elements at superficial level. Example:
+;(1 2 (3 (4 5) (6 7)) 8 (9 10 11)) => (1 3 9).
+
+(defun first-odd-elements (lst)
+  (cond
+   ((null lst) nil) 
+   ((and (listp (car lst)) (oddp (length (car lst))))    (cons (car (car lst)) (first-odd-elements (cdr lst))))
+   ((and (listp lst) (oddp (length  lst)))    (cons (car lst) (first-odd-elements (cdr lst))))
+   (t (first-odd-elements (cdr lst)))))
+(print (first-odd-elements '(1 2 (3 (4 5) (6 7)) 8 (9 10 11))))
+
+;------------------------
+;8d) Write a function to return the sum of all numerical atoms in a list at superficial level.
+(defun sumAtoms(l r)
+    (cond
+    ((null l) r)
+    ((numberp (car l)) (sumAtoms(cdr l) (+ r (car l))))
+    (t(sumAtoms(cdr l) r))
+        )
+    )
+(print (sumAtoms '(1 2 (3 (4 5) (6 7)) 8 (9 10 11))0))
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;9a) Write a function that merges two sorted linear lists and keeps double values.
+(defun merge-with-duplicates (lst1 lst2)
+  (cond ((null lst1) lst2)
+        ((null lst2) lst1)
+        ((< (car lst1) (car lst2)) (cons (car lst1) (merge-with-duplicates (cdr lst1) lst2)))
+        (t (cons (car lst2) (merge-with-duplicates lst1 (cdr lst2))))))
+(print ( merge-with-duplicates '(1 2 3 3) '(3 4 4 5 5 7)))
+
+;------------------------
+;9b) Write a function to replace an element E by all elements of a list L1 at all levels of a given list L.
+(defun replaceWithList (e l1 l)
+  (cond
+   ((null l) nil)
+   ((eq e (car l)) (append l1 (replaceWithList e l1 (cdr l))))
+   ((listp (car l)) (cons (replaceWithList e l1 (car l)) (replaceWithList e l1 (cdr l))))
+   (t (cons (car l) (replaceWithList e l1 (cdr l))))))
+(print (replaceWithList 3 '(0 0) '(1 2 3 (3 4 5) ((3) 3))   ))
+
+;------------------------
+;9c) Write a function to determines the sum of two numbers in list representation, and returns the corresponding decimal number, 
+;without transforming the representation of the number from list to number.
+
+(defun rev (l)
+           (cond
+             ((null l) '())
+             (T (append (rev (cdr l)) (list (car l)))))) 
+
+(defun sumListNumbers(l1 l2 flag)
+    (cond
+        ((and(and(null l1) (null l2))(= flag 1)) (list 1) )
+        ((and(and(null l1) (null l2))(= flag 0)) nil )
+        ((and(null l1)(>(+(car l2)flag)10)) (cons(- (+ (car l2)flag) 10 ) (sumListNumbers l1 (cdr l2) 1)))
+        ((and(null l1)(<(+(car l2)flag)10)) (cons(+ (car l2)flag) (sumListNumbers l1 (cdr l2) 0)))
+        ((and(null l2)(>(+(car l1)flag)10)) (cons(- (+ (car l1)flag) 10 ) (sumListNumbers (cdr l1) l2 1)))
+        ((and(null l2)(<(+(car l1)flag)10)) (cons(+ (car l1)flag) (sumListNumbers (cdr l1) l2 0)))
+        ((>(+(+(car l1)(car l2)) flag) 9) (cons(- (+ (+(car l1)(car l2))flag) 10 ) (sumListNumbers (cdr l1) (cdr l2) 1)))
+        (t(cons (+ (+(car l1)(car l2)) flag)(sumListNumbers (cdr l1) (cdr l2) 0)))
+        )
+)
+(defun mainSumListNumbers(l1 l2)
+    (rev(sumListNumbers (rev l1) (rev l2) 0)))
+    
+(print ( mainSumListNumbers '(9 9) '(1 2)))
+;=> (1 1 1)
+(print ( mainSumListNumbers '(8 0) '(1 2)))
+;=> (9 2)
+
+;------------------------
+;9d) Write a function to return the greatest common divisor of all numbers in a linear list.
+
+(defun gcd-of-list (numbers)
+  (if (null numbers)
+      1
+      (gcd-of-list-helper (car numbers)(cdr  numbers))))
+
+(defun gcd-of-list-helper (a b)
+   (cond
+       ((null b) a)
+       ((numberp (car b))(gcd-of-list-helper (gcd-of-two a (car b)) (cdr b)))
+       ((listp (car b))(gcd-of-list-helper  (gcd-of-two a (gcd-of-list-helper a (car b)))(cdr b)))
+       (t(gcd-of-list-helper a (cdr b)))
+    )  
+)       
+
+(defun gcd-of-two (a b)
+  (if (zerop b)
+      a
+      (gcd-of-two b (mod a b))))
+
+(print (gcd-of-list '(24 ( 16 (12 C B)) 72)))
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;10a) Write a function to return the product of all the numerical atoms from a list, at superficial level.
+(defun productAtoms(l)
+    (cond
+    ((null l) 1)
+    ((numberp (car l)) (*(car l)(productAtoms(cdr l))))
+    (t(productAtoms (cdr l)))
+    )
+)
+(print (productAtoms '(1 A 2 3 (3 4 5) T)))
+
+;------------------------
+;10b) Write a function to replace the first occurence of an element E in a given list with an other element O.
+(defun replaceFirstOccurence(l e o flag)
+    (cond
+        ((null l) nil)
+        ((and(eq (car l) e)(= flag 1))(cons o (replaceFirstOccurence (cdr l) e o 0)))
+        (t(cons (car l) (replaceFirstOccurence (cdr l) e o flag)))
+        )
+    )
+(defun mainReplaceFirstOccurence (l e o)
+    (replaceFirstOccurence l e o 1))
+(print (mainReplaceFirstOccurence '(1 2 3 4 5 6 7 6 4 6) 6 0 ))
+
+;------------------------
+;10c) Write a function to compute the result of an arithmetic expression memorised
+;in preorder on a stack. Examples:
+;(+ 1 3) ==> 4 (1 + 3)
+;(+ * 2 4 3) ==> 11 [((2 * 4) + 3)
+;(+ * 2 4 - 5 * 2 2) ==> 9 ((2 * 4) + (5 - (2 * 2))
+
+(defun _expression (op a b)
+  (cond
+   ((string= op "+") (+ a b))
+   ((string= op "-") (- a b))
+   ((string= op "*") (* a b))
+   ((string= op "/") (floor a b))
+   (t (error "Invalid operator: %s" op))))
+
+(defun expression (l)
+  (cond
+   ((null l) nil)
+   ((and (and (numberp (cadr l)) (numberp (caddr l))) (atom (car l))) (cons (_expression (car l) (cadr l) (caddr l)) (expression (cdddr l))))
+   (t (cons (car l) (expression (cdr l))))))
+
+(defun solve (l)
+  (cond
+   ((null (cdr l)) (car l))
+   (t (solve (expression l)))))
+
+(print(solve'(+ 1 3)));  =>  4
+(print(solve'(+ * 2 4 3)))  ;=>  11
+(print(solve '(+ * 2 4 - 5 * 2 2)))  ;=>  9
+
+;------------------------
+;10d) Write a function to produce the list of pairs (atom n), where atom appears for n times in the parameter list. Example:
+;(A B A B A C A) --> ((A 4) (B 2) (C 1)).
+(defun count-atoms (lst)
+  (if (null lst)
+      nil
+    (let ((atom (car lst));the head of the list
+          (rest (cdr lst)));the tale of the list
+         
+      (cons (list atom (count atom lst)) ;make a list containing the attom and the number of occurences
+            (count-atoms (remove atom rest)))))); call the function for the list after removing all the occurences of the atom
+
+;(print (count-atoms '(A B A B A C A)))
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;13a) A linear list is given. Eliminate from the list all elements from N to N steps, N-given.
+
+(defun eliminanteFromNToN(l n cur)
+    (cond
+        ((null l)nil)
+        ((=(mod cur n)0)(eliminanteFromNToN (cdr l) n (+ cur 1)))
+        (t(cons (car l)(eliminanteFromNToN (cdr l) n (+ cur 1)))
+                )
+          )
+    )
+    
+(defun mainEliminanteFromNToN(l n)
+    (eliminanteFromNToN l n n));starting from cur=n to eliminate the first element 
+(print (mainEliminanteFromNToN '(1 2 3 4 5 6 7 8) 3))
+; => '(2 3 4 5 7 8)
+
+;------------------------
+;13c) Build a function that returns the minimum numeric atom from a list, at any level.
+(defun minimum (l)
+  (cond
+   ((null l) 99999)
+   (t (min (car l) (minimum (cdr l))))))
+
+(print (minimum '(1 2 3 1)))
+
+;------------------------
+;13d) Write a function that deletes from a linear list of all occurrences of the maximum element.
+
+(defun maximum (l)
+  (cond
+   ((null l) -99999)
+   (t (max (car l) (maximum (cdr l))))))
+
+(defun eliminate(l e)
+    (cond
+        ((null l)nil)
+        ((and(numberp (car l))(=(car l) e)) (eliminate (cdr l) e))
+        ((listp (car l))(append (eliminate(cdr l) e) list(eliminante(car l) e)))
+        (t(cons (car l)(eliminate (cdr l) e)))
+        )
+    )
+(print (eliminate '(10 1 2 10 3 10 4 10 5 10 ) 10))
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;14a) Write a function to return the union of two sets.
+
+(defun findE(l e)
+    (cond
+        ((null l) 0)
+        ((= (car l) e) 1)
+        (t(findE(cdr l) e))
+        )
+    )
+(defun unionSets(s1 s2);s1-s2 =>all the elements that are in s1 or in s2
+    (cond
+        ((null s1) s2)
+        ((= (findE s2 (car s1))0) (cons (car s1) (unionSets(cdr s1) s2)))
+        (t(unionSets(cdr s1) s2))
+        )
+    )
+(print (unionSets '(1 2 3 4 5) '(4 5 6 7 8)))
+
+;------------------------
+;14b) Write a function to return the product of all numerical atoms in a list, at any level.
+
+(defun productAtomsAllLevels(l)
+    (cond
+    ((null l) 1)
+    ((numberp (car l)) (*(car l)(productAtomsAllLevels(cdr l))))
+    ((listp (car l))(*(productAtomsAllLevels(car l))(productAtomsAllLevels(cdr l))))
+    (t(productAtomsAllLevels (cdr l)))
+    )
+)
+;(print (productAtomsAllLevels '(1 (2 3 (4 (5 6) 7)))))
+;=>5040
+
+;------------------------
+;14c) Write a function to sort a linear list with keeping the double values.
+(defun sort-and-keep-doubles (lst)
+  "Sort the linear list LST and keep the double values."
+  (let ((sorted (sort-and-keep-doubles-aux lst)))
+    (sort-and-keep-doubles-unique sorted)))
+
+(defun sort-and-keep-doubles-aux (lst)
+  "Sort the linear list LST and return the sorted list."
+  (if (null lst)
+      nil
+      (let* ((rest (sort-and-keep-doubles-aux (cdr lst)))
+             (inserted (sort-and-keep-doubles-insert (car lst) rest)))
+        inserted)))
+
+(defun sort-and-keep-doubles-insert (x lst)
+  "Insert element X into the sorted list LST and return the resulting list."
+  (if (or (null lst) (< x (car lst)))
+      (cons x lst)
+      (cons (car lst) (sort-and-keep-doubles-insert x (cdr lst)))))
+
+(defun sort-and-keep-doubles-unique (lst)
+  "Return a list with only the unique elements from the linear list LST, but keep double values."
+  (if (null lst)
+      nil
+      (let ((rest (sort-and-keep-doubles-unique (cdr lst))))
+        (if (equal (car lst) (car rest))
+            (cons (car lst) rest)
+            (cons (car lst) rest)))))
+
+
+(print (sort-and-keep-doubles '(1 3 2 5 6 7 7 3 9)))
+
+;------------------------
+;14d) Build a list which contains positions of a minimum numeric element from a given linear list.
+(defun minimum (l)
+  (cond
+   ((null l) 99999)
+   (t (min (car l) (minimum (cdr l))))))
+
+(defun buildPositionsList(l e pos)
+    (cond
+        ((null l)nil)
+        ((=(car l) e) (cons pos (buildPositionsList (cdr l) e (+ pos 1))))
+        (t(buildPositionsList (cdr l) e (+ pos 1)))
+        )
+    )
+(defun main(l e)
+    (buildPositionsList l (minimum l) 1)
+    )
+(print (main '( 1 2 1 3 1 4 5 1) 1))
+
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+;15a) Write a function to insert an element E on the n-th position of a linear list.
+(defun insertFromNToN(l n e cur)
+    (cond
+        ((null l)nil)
+        ((=(mod cur n)0)(cons e (insertFromNToN (cdr l) n e (+ cur 1))))
+        (t(cons(car l) (insertFromNToN (cdr l) n e (+ cur 1))))
+          )
+    )
+    
+(defun mainInsertFromNToN(l n e)
+    (insertFromNToN l n e n));starting from cur=n to insert on the first element 
+(print (mainInsertFromNToN '(1 2 3 4 5 6 7 8) 3 0))
+; => (0 2 3 0 5 6 0 8) 
+
+;------------------------
+;15b) Write a function to return the sum of all numerical atoms of a list, at any level.
+(defun sumAtomsAllLevels(l)
+    (cond
+    ((null l) 0)
+    ((numberp (car l)) (+(car l)(sumAtomsAllLevels(cdr l))))
+    ((listp (car l))(+(sumAtomsAllLevels(car l))(sumAtomsAllLevels(cdr l))))
+    (t(sumAtomsAllLevels (cdr l)))
+    )
+)
+(print (sumAtomsAllLevels '(1 (2 3 (4 (5 6) 7)))));=>28
+
+;------------------------
+;15c) Write a function to return the set of all sublists of a given linear list. Ex. For list ((1 2 3) ((4 5) 6)) => ((1 2 3) (4 5) ((4 5) 6))
+(defun allSublists(l)
+    (cond
+    ((null l) nil)
+    ((listp (car l))(cons (car l) (append (allSublists(car l)) (allSublists(cdr l)))))
+    (t(allSublists(cdr l)))
+    ))
+(print (allSublists '((1 2 3) ((4 5) 6))))
+
+;------------------------
+;15d) Write a function to test the equality of two sets, without using the difference of two sets.
+(defun sets-equal (set1 set2)
+  "Return T if the sets SET1 and SET2 are equal, otherwise return NIL."
+  (and (every #'(lambda (x) (member x set2)) set1)
+       (every #'(lambda (x) (member x set1)) set2)))
+
+(print (sets-equal '(1 2 7 3) '(1 6 2 3)))
+(print (sets-equal '(1 2 7 3) '(1 7 2 3)))
