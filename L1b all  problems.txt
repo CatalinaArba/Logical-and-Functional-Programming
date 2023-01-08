@@ -1,0 +1,47 @@
+10. Return the level of a node X in a tree of type (2). The level ;10. Return the level of a node X in a tree of type (2). The level of the root element is 0.
+(defun level-of-node (node tree level)
+  (cond ((null tree) 0)
+        ((equal node (car tree)) level)
+        ((listp (car tree))
+         (let ((result (level-of-node node (car tree) (1+ level))))
+           (if (not (zerop result))
+               result
+             (level-of-node node (cdr tree) level))))
+        (t (level-of-node node (cdr tree) level))))
+
+;(print(level-of-node 'A '(A (B) (C (D) (E))) 0))
+
+;12. Determine the list of nodes accesed in preorder in a tree of type (2).
+(defun postorder (l)
+  (cond
+   ((null l) nil)
+   (t (append (postorder (cadr l)) (postorder (caddr l)) (list (car l))))
+   )
+  )
+
+;(print(postorder '(a (b () (f)) (d (e)))))
+
+
+;13. For a given tree of type (2) return the path from the root node to a certain given node X.
+(defun explore_path (l level node)
+(cond
+  ((null (car l)) nil)
+  ((equal (car l) node) (list (car l)))
+  (T 
+    (setq left (explore_path (cadr l) (+ level 1) node ))
+	  (cond 
+		    ((null left) (setq right (explore_path (caddr l) (+ level 1) node ))
+                     (cond
+                         ((null right) NIL)
+                         (T (append (list (car l)) right))
+                      )
+        )
+		    (T (append (list (car l)) left ))
+    )
+ )
+)
+)
+(print (explore_path '(A (B) (C (D) (E))) 0 'E ))
+(print (explore_path '(A(B(D)(E(F(G)(H))))(C(I(J(K))))) 0 'A))
+(print (explore_path '(A(B(D)(E(F(G)(H))))(C(I(J(K))))) 0 'H))
+of the root element is 0.
