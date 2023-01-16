@@ -1,0 +1,17 @@
+; Given a nonlinear list, write a function to replace the numerical values on odd levels and greater than a given value k to their natural predecessor. 
+;(1 s 4(3 f (7))), k=0 => (0 s 3( 3 f(6)))
+
+;my_replace(l1...ln,k,level)=[], n=0
+;                            l1-1 + my_replace(l2..ln,k,level+1), level oddand l1>k
+
+(defun my_replace( l k level)
+  (cond
+      ((and (oddp level) (numberp l) (> l k)) (- l 1))
+      ((atom l) l)
+      (t (mapcar #'(lambda (x) (my_replace x k (+ level 1))) l))
+  )
+)
+
+(defun main (l k)
+   (my_replace l k 0)
+)
