@@ -1,0 +1,184 @@
+;2020 ex 1 pb 3
+
+(defun removeA(l)
+    (cond
+        ((and(numberp l)(=(mod l 3)0))nil)
+        ((atom l)(list l))
+        (t(list(mapcan #'removeA l)))
+    )
+)
+
+(defun mainRemove(l)
+    (car(removeA l))
+    )
+
+;(print(mainRemove '(1(2 A(3 A))(6))))
+;(print(mainRemove '(1(2 (C)))))
+
+;2020 ex 2 pb 4
+
+(defun replaceAtLevel (l n e)
+    (cond
+        ((and(= (mod n 2) 1)(atom l))(list e))
+        ((atom l)(list l))
+        (t(list(mapcan #'(lambda (l) (replaceAtLevel l (+ n 1) e))l)))
+        )
+    )
+(defun main(l e)
+    (replaceAtLevel l -1 e))
+;(print(main '(a(b (g))(c(d(e))(f))) 'h))
+;(print(replaceAtLevel '(a(b (g))(c(d(e))(f))) 0 'h))
+
+
+;2020 ex 3 pb 4
+(defun replaceAtLevelK(l n k)
+    (cond
+        ((and(atom l)(= n k))(list 0))
+        ((atom l)(list l))
+        (t(list(mapcan #'(lambda (l) (replaceAtLevelK l (+ n 1) k)) l)))
+        )
+    )
+(defun mainReplaceAtLevelK(l k)
+    (replaceAtLevelK l 0 k))
+;(print(mainReplaceAtLevelK '(a(1(2 b))(c(d))) 2))
+
+;2020 ex 4 pb 4
+(defun replaceNumber(l)
+    (cond 
+        ((and(numberp l)(= (mod l 2)0))(list (+ l 1)))
+        ((atom l)(list l))
+        (t(list(mapcan #'replaceNumber l)))
+        )
+    )
+(defun mainReplaceNumber(l)
+    (car(replaceNumber l)))
+;(print(mainReplaceNumber '( 1 s 4 (2 f (7)))))
+
+;2019 ex 1 pb 4
+(defun check(l)
+    (cond
+        ((null l) nil)
+        ((and(null(cdr l))(not(numberp(car l))))T)
+        (T(check (cdr l)))
+        )
+    )
+;(print (check '(D 1 (6 F))))
+;(print (check '(6 F)))
+;(print (check '((G 4)6)))
+
+(defun sublists (l)
+    (cond
+        ((atom l)0)
+        ((check l) (+ 1 (apply #'+(mapcar #'sublists l))))
+        (t(apply #'+(mapcar #'sublists l)))
+        )
+    )
+;(print(sublists '(A(B 2)(1 C 4)(D 1 (6 F))((G 4)6)F)))
+
+
+;2019 ex 2 pb 4
+(defun maxi(l r)
+    (cond
+        ((null l)r)
+        ((and(numberp(car l))(>(car l) r))(maxi(cdr l) (car l)))
+        ((and(numberp (car l))(<(car l) r))(maxi(cdr l) r))
+        ((listp (car l))(maxi (cdr l) (maxi (car l) r)))
+        (t(maxi(cdr l) r))                                
+        )
+    )
+(defun maximum (l)
+    (cond
+        ((atom l)l)
+        (t(apply #'max(mapcar #'maximum l)))
+        )
+    )
+
+(defun check2(l)
+       (cond
+          ((null l)nil)
+          ((=(mod (maxi (cdr l) -999999999) 2)  0) t)
+          (t nil)
+      )
+    )
+          
+(defun sublistsMax(l n)
+    (cond
+        ((atom l)0)
+        ((and (check2 l)(= (mod n 2) 0))(+ 1(apply #'+(mapcar #'(lambda (l) (sublistsMax l (+ n 1)))l))))
+        (t(apply #'+(mapcar #'(lambda (l) (sublistsMax l (+ n 1)))l)))
+        )
+    )
+
+(defun main (l)
+    (sublistsMax l -1))
+;(print(maximum '(1(2(3)(4(5))))))
+;(print(maxi'(1(2(3)(4(5)))) '1))
+
+;(print(check '(1(2(3)(4(6))))))
+;(print(check'(1(2(3)(4(5))))))
+
+;(print (check '(A(B 2)(1 C 4)(1 (6(F))(((G)4)6)))))
+(print (main '(A(B 2)(1 C 4)(1 (6(F))(((G)4)6)))))
+
+
+;2020 ex 3 pb 4
+(defun noOfNonnumeric(l)
+    (cond
+        ((numberp l)0)
+        ((atom l)1)
+        (t(apply #'+(mapcar #'noOfNonnumeric l)))
+        )
+    )
+
+
+;(print(noOfNonnumeric '(A B C (1) 3)))
+(defun check (l)
+    (cond
+        ((= (mod (noOfNonnumeric l)  2)  1) t)
+        (t nil)
+        )
+    )
+(defun sublists(l n)
+    (cond
+        ((atom l)0)
+        ((and(= (mod n 2) 0)(check l))(+ 1 (apply #'+(mapcar #'(lambda (l) (sublists l (+ n 1)))l))))
+        (t(apply #'+(mapcar #'(lambda (l) (sublists l (+ n 1)))l)))
+        )
+    )
+(defun main(l)
+    (sublists  l 0)
+    )
+(print(main '(A(B 2)(1 C 4)(1(6 F))(((G)4)6)))) ;=> it results 3 because it takes into consideration the list itself because it respects the rule
+
+
+
+%2019 ex 4 pb 4
+(defun mini (a b)
+    (cond
+        ((< a b)a)
+        (t b)
+        )
+    )
+(defun minimum(l)
+    (COND
+    ((null l) 9999999)
+    ((numberp (car l))(mini(car l) (minimum (cdr l))))
+    ((listp (car l))(mini (minimum (car l))(minimum (cdr l))))
+    (t(minimum(cdr l)))
+    ))
+
+(defun check(l)
+    (cond 
+        ((=(mod (minimum l)2) 0) t)
+        (t nil)
+        )
+    )
+(defun submultimi(l n)
+    (cond
+        ((atom l)0)
+        ((and (= (mod n 2)1)(check l))(+ 1 (apply #'+(mapcar #'(lambda (l) (submultimi l (+ n 1)))l))))
+        (t(apply #'+(mapcar #'(lambda (l) (submultimi l (+ n 1)))l)))
+        )
+    )
+    
+(print(submultimi '(A (B 2)(2 C 4) (1 (3 F))(((G)4)2)) 0)) 

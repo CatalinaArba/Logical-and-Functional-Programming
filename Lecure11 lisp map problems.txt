@@ -1,0 +1,146 @@
+;Lecture11-exercises
+;5.Define a function that, given an nonlinear list, return the list of atoms(from any level) in the list.
+
+(defun atomi(l)
+    (cond 
+        ((atom l) (list l))
+        (t(mapcan #' atomi l))
+        )
+    )
+
+
+;(print(atomi '(1(2(3(4 5)6))(7(8 9)))))
+
+;3.Define a function that returns the length of a nonlinear list (in number of atoms at any level)
+(defun noOfAtoms(l)
+    (cond 
+        ((atom l) 1)
+        (t(apply #'+(mapcar #'noOfAtoms l)))
+    )
+)
+;(print(noOfAtoms '(1(2(3(4 5)6))(7(8 9)))))
+
+;6.Define a function that,given an nonlinear list returns the list with all negative numerical atoms at any level removed (keeping the list structure)
+(defun elim(l)
+    (cond
+        ((and(numberp l)(minusp l))nil)
+        ((atom l) (list l))
+        (t(list(mapcan #'elim l)))
+        )
+    )
+(defun elimin(l)
+    (car (elim l)))
+;(print(elimin '(A(1 B(-1 3 C))2 -3)))
+
+;4. Define a function that, given a nonlinear list returns the number of sublists (including the list) with even length (at the superficial level).
+
+(defun even(l)
+    (cond
+        ((=(mod (noOfAtoms l)2)0)T)
+        (T NIL)
+        )
+    )
+
+
+(defun nr(l)
+    (cond 
+        ((atom l)0)
+        ((even l)(+ 1(apply #'+(mapcar #'nr l))))
+        (t(apply #'+(mapcar #'nr l)))
+        )
+    )
+;(print(even '(1(2(3(4 5)6))(7(8 9)))))
+;(print(even '(2(3(4 5)6))))
+;(print(even '(3(4 5)6)))
+;(print(even '(4 5)))
+;(print(even '(7(8 9))))
+;(print(even '(8 9)))
+
+;(print(nr '(1(2(3(4 5)6))(7(8 9)))))
+
+;8. We could represent a general tree in Lisp as a lis =t of the form (root subtree1 subtree 2). 
+;Define a function that , given a tree, returns the number of nodes in the tree
+
+(defun nrNodes (l)
+    (cond
+    ((null(cdr l)) 1)
+    (t(+ 1 (apply #'+(mapcar #'nrNodes (cdr l)))))
+        )
+    )
+
+;(print(nrNodes '(1 (2)(3 (5)(6)))))
+;(print(noOfAtoms '(1 (2)(3 (5)(6)))))
+
+
+;9 Define a function that, given a tree represented as above, return the depth of the tree
+
+(defun depth(l)
+    (cond
+        ((null(cdr l)) 0)
+        (t(+ 1(apply #'max(mapcar #'depth (cdr l)))))
+        )
+    )
+(defun depth2(l)
+    (cond
+        ((atom l) 0)
+        (t(+ 1(apply #'max(mapcar #'depth2 l)))))
+        )
+    
+
+;(print(depth '(1 (2)(3 (5)(6 (7))))))
+;(print(depth2 '(1 (2)(3 (5)(6 (7))))))
+
+;10. Define a function which, given an nonlinear list, returns the list of atoms that appear on any level but in reverse order
+
+(defun reverseList(l)
+    (cond
+        ((atom l) (list l))
+        (t(mapcan #'reverseList(reverse l)))))
+
+;(print(reverseList '(A(B C(D (E)))(F G))))
+
+;12. Write a function to return the number of occurences of a certain element in a nonlinear list at any level
+
+(defun noOfOccurences (l e)
+    (cond
+    ((equal l e)1)
+    ((atom l)0)
+    (t(apply #'+(mapcar #'(lambda (l) (noOfOccurences l e)) l)))))
+
+;(print (noOfOccurences '(1(a(3(4 a)a))(7 (a 9))) 'a))
+
+;13. Give a nonlinear list, write a function to return the list with all negative numeric atoms removed.
+(defun removeNegative(l)
+    (cond
+        ((and(numberp l)(minusp l))nil)
+        ((atom l)(list l))
+        (t(list(mapcan #'removeNegative l)))
+        )
+    )
+(defun mainRemoveNegative (l)
+    (car(removeNegative l)))
+
+;(print(mainRemoveNegative '(a 2 (b -4 (c -6))-1)))
+
+;14. Write a function to return the list of atoms at depth n from a non-linear list. The superficial level is assumed 1
+
+(defun nodesAtDepth(l n)
+    (cond
+        ((and(atom l)(= n 0))(list l))
+        ((= n 0) nil)
+        ((atom l) nil)
+        (t (mapcan #'(lambda (l)(nodesAtDepth l (- n 1)))l))
+        )
+    )
+;(print (nodesAtDepth '((a (b(c d))) e (f (g h(i))))3))
+
+;16. Given  a  set  represented  as  a  linear  list,  write  a  function  to  generate  the  list  of permutations of that set. Use a MAP function.
+
+(permutari‘(1 2 3)) →((1 2 3) (1 3 2) (2 1 3) (2 3 1) (3 1 2) (3 2 1))
+
+(defun permutari(L) 
+    (cond 
+        ((null (cdr L)) (list L))
+        (t (mapcan #'   (lambda (e) (mapcar #'(lambda (p) (cons e p)) (permutari(remove e L)))) L )) 
+        )
+    ) 
